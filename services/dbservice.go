@@ -11,7 +11,13 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-var DATABASE string = os.Getenv("SQLITE_PATH")
+func DATABASE() string {
+	database := os.Getenv("SQLITE_PATH")
+	if database == "" {
+		return "database/sqlite.db"
+	}
+	return database
+}
 
 type User struct {
 	gorm.Model
@@ -33,7 +39,7 @@ var ctx = context.Background()
 
 func DbInit() {
 	fmt.Println("hi from dbinit")
-	db, err := gorm.Open(sqlite.Open(DATABASE), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(DATABASE()), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
