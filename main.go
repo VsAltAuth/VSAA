@@ -4,19 +4,20 @@ import (
 	"fmt"
 	"net/http"
 
-	//"github.com/VsAltAuth/VSAA/services"
 	"github.com/VsAltAuth/VSAA/services"
+	"github.com/VsAltAuth/VSAA/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	fmt.Println("Hi")
 	db := services.DbInit()
-	CacheService := services.NewCacheService(db, 5, 10)
+	services.InitCacheService(db)
 	router := gin.Default()
 	//router.TrustedPlatform = gin.PlatformCloudflare
 	router.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "hi"}) })
-	router.GET("/resolveplayername", services.)
+	router.POST("/resolveplayername", utils.ResolveUIDByPlayername)
+	router.POST("/resolveplayeruid", utils.ResolvePlayernameByUID)
 
 	router.Run("localhost:8080")
 }

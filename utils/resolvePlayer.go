@@ -1,1 +1,31 @@
-package services
+package utils
+
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/VsAltAuth/VSAA/services"
+	"github.com/gin-gonic/gin"
+)
+
+func ResolveUIDByPlayername(c *gin.Context) {
+	playername := c.PostForm("playername")
+	user, err := services.CacheServiceInstance.GetUserByPlayername(playername)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusOK, gin.H{"playeruid": nil, "valid": 1})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"playeruid": user.UID, "valid": 1})
+}
+
+func ResolvePlayernameByUID(c *gin.Context) {
+	uid := c.PostForm("uid")
+	user, err := services.CacheServiceInstance.GetUserByUID(uid)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusOK, gin.H{"playername": nil, "valid": 1})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"playername": user.Playername, "valid": 1})
+}

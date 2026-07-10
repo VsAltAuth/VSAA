@@ -21,6 +21,8 @@ func DATABASE() string {
 	return database
 }
 
+var CacheServiceInstance *CacheService
+
 type User struct {
 	gorm.Model
 	UID          string
@@ -48,7 +50,7 @@ func DbInit() *gorm.DB {
 	fmt.Println("hi from dbinit")
 	db, err := gorm.Open(sqlite.Open(DATABASE()), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		panic("Failed to connect database")
 	}
 	db.AutoMigrate(&User{}, &Session{})
 	mkusr(db)
@@ -60,6 +62,14 @@ func NewCacheService(db *gorm.DB, expirationDuration time.Duration, cleanupInter
 		db:    db,
 		cache: cache.New(expirationDuration, cleanupInterval),
 	}
+}
+
+func InitCacheService(db *gorm.DB) error {
+	CacheServiceInstance = NewCacheService(db, 5*time.Minute, 10*time.Minute)
+	if CacheServiceInstance == nil {
+		return fmt.Errorf("Something bad happened in InitCacheService!!!")
+	}
+	return nil
 }
 
 func mkusr(db *gorm.DB) {
@@ -86,7 +96,7 @@ func (s *CacheService) GetUserByUID(uid string) (*User, error) {
 	return &user, nil
 }
 
-func (s *CacheService) GetUserByPlayerName(playername string) (*User, error) {
+func (s *CacheService) GetUserByPlayername(playername string) (*User, error) {
 	cacheKey := playername
 	if cached, found := s.cache.Get(cacheKey); found {
 		return cached.(*User), nil
