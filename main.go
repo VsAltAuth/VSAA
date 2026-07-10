@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/VsAltAuth/VSAA/services"
+	//"github.com/VsAltAuth/VSAA/services"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	fmt.Println("Hi")
-	services.DbInit()
 	router := gin.Default()
 	//router.TrustedPlatform = gin.PlatformCloudflare
 	router.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "hi"}) })
