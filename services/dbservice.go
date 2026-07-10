@@ -47,13 +47,11 @@ type CacheService struct {
 var ctx = context.Background()
 
 func DbInit() *gorm.DB {
-	fmt.Println("hi from dbinit")
 	db, err := gorm.Open(sqlite.Open(DATABASE()), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect database")
 	}
 	db.AutoMigrate(&User{}, &Session{})
-	mkusr(db)
 	return db
 }
 
@@ -70,13 +68,6 @@ func InitCacheService(db *gorm.DB) error {
 		return fmt.Errorf("Something bad happened in InitCacheService!!!")
 	}
 	return nil
-}
-
-func mkusr(db *gorm.DB) {
-	err := gorm.G[User](db).Create(ctx, &User{UID: "niggerniggernigger", Email: "megadfga111@xyecoc.com", HashedPass: "dneh", Playername: "yar", Entitlements: "VIV"})
-	if err != nil {
-		print(err)
-	}
 }
 
 func (s *CacheService) GetUserByUID(uid string) (*User, error) {
