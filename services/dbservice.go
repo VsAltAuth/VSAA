@@ -83,7 +83,7 @@ func (s *CacheService) GetUserByUID(uid string) (*User, error) {
 		return nil, err
 	}
 	// Cache value we got
-	s.cache.Set(cacheKey, &user, 5*time.Minute)
+	s.cache.Set(cacheKey, &user, cache.DefaultExpiration)
 	return &user, nil
 }
 
@@ -99,6 +99,22 @@ func (s *CacheService) GetUserByPlayername(playername string) (*User, error) {
 		return nil, err
 	}
 	// Cache value we got
-	s.cache.Set(cacheKey, &user, 5*time.Minute)
+	s.cache.Set(cacheKey, &user, cache.DefaultExpiration)
 	return &user, nil
+}
+
+func (s *CacheService) GetSessionByUID(uid string) (*Session, error) {
+	cacheKey := uid
+	if cached, found := s.cache.Get(cacheKey); found {
+		return cached.(*Session), nil
+	}
+
+	// Query DB if not found in cache
+	var session Session
+	if err := s.db.Where("uid = ?", uid).First(&session).Error; err != nil {
+		return nil, err
+	}
+	// Cache value we got
+	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
+	return &session, nil
 }
