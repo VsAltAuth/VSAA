@@ -131,6 +131,17 @@ func (s *CacheService) GetUIDBySession(session string) (*Session, error) {
 		return nil, err
 	}
 	// Cache value we got
-	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
+	s.cache.Set(cacheKey, &uid, cache.DefaultExpiration)
 	return &uid, nil
+}
+
+func (s *CacheService) WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
+	cacheKey := sessionkey
+	session := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
+	err := s.db.Create(&session)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create session in database: %w", err)
+	}
+	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
+	return &session, nil
 }
