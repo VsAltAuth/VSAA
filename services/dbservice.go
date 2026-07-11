@@ -118,3 +118,19 @@ func (s *CacheService) GetSessionByUID(uid string) (*Session, error) {
 	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
 	return &session, nil
 }
+
+func (s *CacheService) GetUIDBySession(session string) (*Session, error) {
+	cacheKey := session
+	if cached, found := s.cache.Get(cacheKey); found {
+		return cached.(*Session), nil
+	}
+
+	// Query DB if not found in cache
+	var uid Session
+	if err := s.db.Where("session = ?", uid).First(&uid).Error; err != nil {
+		return nil, err
+	}
+	// Cache value we got
+	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
+	return &uid, nil
+}
