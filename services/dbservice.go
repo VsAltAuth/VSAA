@@ -140,7 +140,7 @@ func (s *CacheService) WriteSession(uid string, sessionkey string, gamever strin
 	session := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
 	err := s.db.Create(&session)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create session in database: %w", err)
+		return nil, fmt.Errorf("Failed to create session in database: %v", err)
 	}
 	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
 	return &session, nil
