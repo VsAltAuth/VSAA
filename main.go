@@ -12,7 +12,7 @@ import (
 func main() {
 	fmt.Println("Hi")
 	db := services.DbInit()
-	services.InitCacheService(db)
+	services.InitCacheService(db, 5*time.Minute, 10*time.Minute)
 	router := gin.Default()
 	//router.TrustedPlatform = gin.PlatformCloudflare
 	router.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "hi"}) })

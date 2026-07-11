@@ -62,8 +62,8 @@ func NewCacheService(db *gorm.DB, expirationDuration time.Duration, cleanupInter
 	}
 }
 
-func InitCacheService(db *gorm.DB) error {
-	CacheServiceInstance = NewCacheService(db, 5*time.Minute, 10*time.Minute)
+func InitCacheService(db *gorm.DB, expirationDuration time.Duration, cleanupInterval time.Duration) error {
+	CacheServiceInstance = NewCacheService(db, expirationDuration, cleanupInterval)
 	if CacheServiceInstance == nil {
 		return fmt.Errorf("Something bad happened in InitCacheService!!!")
 	}
