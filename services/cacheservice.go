@@ -1,34 +1,28 @@
 package services
 
 import (
-	"context"
-	"time"
 	"fmt"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/patrickmn/go-cache"
-	"gorm.io/gorm"
 )
 
 var CacheServiceInstance *CacheService
 
 type CacheService struct {
 	cache *cache.Cache
-	db    *gorm.DB
-	ctx   context.Context
 }
 
-func NewCacheService(db *gorm.DB, expirationDuration time.Duration, cleanupInterval time.Duration) *CacheService {
+func NewCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) *CacheService {
 	return &CacheService{
-		db:    db,
 		cache: cache.New(expirationDuration, cleanupInterval),
-		ctx: context.Background(),
 	}
 }
 
-func InitCacheService(db *gorm.DB, expirationDuration time.Duration, cleanupInterval time.Duration) error {
-	CacheServiceInstance := NewCacheService(db, expirationDuration, cleanupInterval)
-	if CacheServiceInstance == nil {
+func InitCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) error {
+	CacheService := NewCacheService(expirationDuration, cleanupInterval)
+	if CacheService == nil {
 		return fmt.Errorf("Something bad happened in InitCacheService!!!")
 	}
 	return nil
@@ -42,7 +36,7 @@ func (s *CacheService) GetUserByUID(uid string) (*User, error) {
 
 	// Query DB if not found in cache
 	var user User
-	if err := CacheServiceInstance.DBRead("uid = ?", uid, &user); err != nil {
+	if err := DatabaseService.Read("uid = ?", uid, &user); err != nil {
 		return nil, err
 	}
 	// Cache value we got
@@ -58,7 +52,7 @@ func (s *CacheService) GetUserByPlayername(playername string) (*User, error) {
 
 	// Query DB if not found in cache
 	var user User
-	if err := CacheServiceInstance.DBRead("playername = ?", playername, &user); err != nil {
+	if err := DatabaseService.Read("playername = ?", playername, &user); err != nil {
 		return nil, err
 	}
 	// Cache value we got
@@ -74,7 +68,7 @@ func (s *CacheService) GetUIDBySessionkey(sessionkey string) (*Session, error) {
 
 	// Query DB if not found in cache
 	var session Session
-	if err := CacheServiceInstance.DBRead("session = ?", sessionkey, &session); err != nil {
+	if err := DatabaseService.Read("session = ?", sessionkey, &session); err != nil {
 		return nil, err
 	}
 	// Cache value we got
@@ -85,7 +79,7 @@ func (s *CacheService) GetUIDBySessionkey(sessionkey string) (*Session, error) {
 func (s *CacheService) WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
 	cacheKey := sessionkey
 	session := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
-	if err := CacheServiceInstance.DBWrite(&session); err != nil {
+	if err := DatabaseService.Write(&session); err != nil {
 		return nil, fmt.Errorf("Failed to create session in database: %v", err)
 	}
 	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
