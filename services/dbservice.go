@@ -67,12 +67,14 @@ func InitDatabaseService(db *gorm.DB) error {
 }
 
 /*
-	  Functions specific to reading-writing DB. Now separate from CaheService =D
+	    Functions specific to reading-writing DB. Now separate from CaheService =D
 		Ideally I should abstract than one out too.
 		How to use examples:
 		var user User // type User struct
 		err := DatabaseService.Read("uid = ?", "myuid", &user)
 		err = DatabaseService.Write(&user)
+
+		TODO: rewrite using go generics
 */
 func (s *DBService) Write(data interface{}) error {
 	if err := s.db.WithContext(s.ctx).Create(data).Error; err != nil {
@@ -83,6 +85,13 @@ func (s *DBService) Write(data interface{}) error {
 
 func (s *DBService) Read(entry string, data string, table interface{}) error {
 	if err := s.db.WithContext(s.ctx).Where(entry, data).First(table).Error; err != nil {
+		return fmt.Errorf("Failed to read data in databse: %v", err)
+	}
+	return nil
+}
+
+func (s *DBService) Delete(entry string, data string, table interface{}) error {
+	if err := s.db.WithContext(s.ctx).Where(entry, data).Delete(table).Error; err != nil {
 		return fmt.Errorf("Failed to read data in databse: %v", err)
 	}
 	return nil
