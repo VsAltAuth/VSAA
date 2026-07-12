@@ -33,3 +33,4 @@ go.work.sum
 
 # Database
 database/
+.DS_Store
