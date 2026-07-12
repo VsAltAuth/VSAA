@@ -12,7 +12,7 @@ import (
 
 func main() {
 	fmt.Println("Hi")
-	db := services.DbInit()
+	db := services.DBInit()
 	services.InitCacheService(db, 5*time.Minute, 10*time.Minute)
 	router := gin.Default()
 	//router.TrustedPlatform = gin.PlatformCloudflare
