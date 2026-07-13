@@ -30,7 +30,7 @@ func Read[T any](s *cache.Cache, cacheKey string, entryname string) (*T, error) 
 }
 
 func WriteNew[T any](s *cache.Cache, cacheKey string, data *T) (*T, error) {
-	if err := Create[T](DatabaseService, data); err != nil {
+	if err := Create(DatabaseService, data); err != nil {
 		return nil, err
 	}
 	s.Set(cacheKey, data, cache.DefaultExpiration)
