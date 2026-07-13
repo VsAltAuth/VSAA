@@ -8,6 +8,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
+	"github.com/VsAltAuth/VSAA/models"
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -21,22 +22,6 @@ func DATABASE() string {
 
 var DatabaseService *DBService
 
-type User struct {
-	gorm.Model
-	UID          string
-	Email        string
-	HashedPass   string
-	Playername   string
-	Entitlements string
-}
-
-type Session struct {
-	gorm.Model
-	UID        string
-	Sessionkey string
-	Gamever    string
-}
-
 type DBService struct {
 	db  *gorm.DB
 	ctx context.Context
@@ -47,7 +32,7 @@ func DBInit() *gorm.DB {
 	if err != nil {
 		panic("Failed to connect database")
 	}
-	db.AutoMigrate(&User{}, &Session{})
+	db.AutoMigrate(&models.User{}, &models.Session{})
 	return db
 }
 

@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/VsAltAuth/VSAA/services"
 	"github.com/gin-gonic/gin"
 )
 
 func ResolveUIDByPlayername(c *gin.Context) {
 	playername := c.PostForm("playername")
-	user, err := services.GetUserByPlayername(playername)
+	user, err := GetUserByPlayername(playername)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusOK, gin.H{"playeruid": nil, "valid": 1}) // Original VS auth server returns valid as 1 even when the playername is invalid
@@ -21,7 +20,7 @@ func ResolveUIDByPlayername(c *gin.Context) {
 
 func ResolvePlayernameByUID(c *gin.Context) {
 	uid := c.PostForm("uid")
-	user, err := services.GetUserByUID(uid)
+	user, err := GetUserByUID(uid)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusOK, gin.H{"playername": nil, "valid": 1}) // same as above

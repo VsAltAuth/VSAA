@@ -45,36 +45,3 @@ func DeleteNew[T any](s *cache.Cache, cacheKey string, entryname string) error {
 	s.Delete(cacheKey)
 	return nil
 }
-
-func GetUserByUID(uid string) (*User, error) {
-	user, err := Read[User](CacheService, uid, "uid")
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
-func GetUserByPlayername(playername string) (*User, error) {
-	user, err := Read[User](CacheService, playername, "playername")
-	if err != nil {
-		return nil, err
-	}
-	return user, nil
-}
-
-func GetUIDBySessionkey(sessionkey string) (*Session, error) {
-	session, err := Read[Session](CacheService, sessionkey, "sessionkey")
-	if err != nil {
-		return nil, err
-	}
-	return session, nil
-}
-
-func WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
-	sessionval := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
-	session, err := WriteNew(CacheService, sessionkey, &sessionval)
-	if err != nil {
-		return nil, err
-	}
-	return session, nil
-}
