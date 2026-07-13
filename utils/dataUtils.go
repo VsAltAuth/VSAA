@@ -6,7 +6,7 @@ import (
 )
 
 func GetUserByUID(uid string) (*models.User, error) {
-	user, err := services.Read[models.User](services.CacheService, uid, "uid")
+	user, err := services.Read[models.User](services.CacheService, "uid", uid)
 	if err != nil {
 		return nil, err
 	}
@@ -14,7 +14,7 @@ func GetUserByUID(uid string) (*models.User, error) {
 }
 
 func GetUserByPlayername(playername string) (*models.User, error) {
-	user, err := services.Read[models.User](services.CacheService, playername, "playername")
+	user, err := services.Read[models.User](services.CacheService, "playername", playername)
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +22,7 @@ func GetUserByPlayername(playername string) (*models.User, error) {
 }
 
 func GetUIDBySessionkey(sessionkey string) (*models.Session, error) {
-	session, err := services.Read[models.Session](services.CacheService, sessionkey, "sessionkey")
+	session, err := services.Read[models.Session](services.CacheService, "sessionkey", sessionkey)
 	if err != nil {
 		return nil, err
 	}
@@ -36,4 +36,11 @@ func WriteSession(uid string, sessionkey string, gamever string) (*models.Sessio
 		return nil, err
 	}
 	return session, nil
+}
+
+func RMSession(sessionkey string) error {
+	if err := services.DeleteNew[models.Session](services.CacheService, "sessionkey", sessionkey); err != nil {
+		return err
+	}
+	return nil
 }

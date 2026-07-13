@@ -21,6 +21,7 @@ func main() {
 	router.POST("/resolveplayername", utils.ResolveUIDByPlayername)
 	router.POST("/resolveplayeruid", utils.ResolvePlayernameByUID)
 	router.POST("/clientvalidate", utils.ClientValidate)
+	router.POST("/gamelogout", utils.GameLogout)
 
 	router.Run("localhost:8080")
 }

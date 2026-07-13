@@ -14,7 +14,7 @@ func InitCacheService(expirationDuration time.Duration, cleanupInterval time.Dur
 	CacheService = cache.New(expirationDuration, cleanupInterval)
 }
 
-func Read[T any](s *cache.Cache, cacheKey string, entryname string) (*T, error) {
+func Read[T any](s *cache.Cache, entryname string, cacheKey string) (*T, error) {
 	if cached, found := s.Get(cacheKey); found {
 		if data, ok := cached.(*T); ok {
 			return data, nil
@@ -37,7 +37,7 @@ func WriteNew[T any](s *cache.Cache, cacheKey string, data *T) (*T, error) {
 	return data, nil
 }
 
-func DeleteNew[T any](s *cache.Cache, cacheKey string, entryname string) error {
+func DeleteNew[T any](s *cache.Cache, entryname string, cacheKey string) error {
 	var data T
 	if err := Delete(DatabaseService, entryname, cacheKey, &data); err != nil {
 		return err
