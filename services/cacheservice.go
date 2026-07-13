@@ -8,14 +8,14 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-var CacheServiceInstance *CacheService
+var CacheService *CacheS
 
-type CacheService struct {
+type CacheS struct {
 	cache *cache.Cache
 }
 
-func NewCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) *CacheService {
-	return &CacheService{
+func NewCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) *CacheS {
+	return &CacheS{
 		cache: cache.New(expirationDuration, cleanupInterval),
 	}
 }
@@ -28,60 +28,67 @@ func InitCacheService(expirationDuration time.Duration, cleanupInterval time.Dur
 	return nil
 }
 
-func (s *CacheService) GetUserByUID(uid string) (*User, error) {
-	cacheKey := uid
+func Read[T any](s *CacheS, cacheKey string, entryname string) (*T, error) {
 	if cached, found := s.cache.Get(cacheKey); found {
-		return cached.(*User), nil
+		if data, ok := cached.(*T); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf("Cache type mismatch!")
 	}
-
-	// Query DB if not found in cache
-	var user User
-	if err := DatabaseService.Query("uid", uid, &user); err != nil {
+	var data T
+	if err := Query(DatabaseService, entryname, cacheKey, &data); err != nil {
 		return nil, err
 	}
-	// Cache value we got
-	s.cache.Set(cacheKey, &user, cache.DefaultExpiration)
-	return &user, nil
+	s.cache.Set(cacheKey, &data, cache.DefaultExpiration)
+	return &data, nil
 }
 
-func (s *CacheService) GetUserByPlayername(playername string) (*User, error) {
-	cacheKey := playername
-	if cached, found := s.cache.Get(cacheKey); found {
-		return cached.(*User), nil
-	}
-
-	// Query DB if not found in cache
-	var user User
-	if err := DatabaseService.Query("playername", playername, &user); err != nil {
+func WriteNew[T any](s *CacheS, cacheKey string, data *T) (*T, error) {
+	if err := Create[T](DatabaseService, data); err != nil {
 		return nil, err
 	}
-	// Cache value we got
-	s.cache.Set(cacheKey, &user, cache.DefaultExpiration)
-	return &user, nil
+	s.cache.Set(cacheKey, data, cache.DefaultExpiration)
+	return data, nil
 }
 
-func (s *CacheService) GetUIDBySessionkey(sessionkey string) (*Session, error) {
-	cacheKey := sessionkey
-	if cached, found := s.cache.Get(cacheKey); found {
-		return cached.(*Session), nil
+func DeleteNew[T any](s *CacheS, cacheKey string, entryname string) error {
+	var data T
+	if err := Delete(DatabaseService, entryname, cacheKey, &data); err != nil {
+		return err
 	}
+	s.cache.Delete(cacheKey)
+	return nil
+}
 
-	// Query DB if not found in cache
-	var session Session
-	if err := DatabaseService.Query("session", sessionkey, &session); err != nil {
+func GetUserByUID(uid string) (*User, error) {
+	user, err := Read[User](CacheService, uid, "uid")
+	if err != nil {
 		return nil, err
 	}
-	// Cache value we got
-	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
-	return &session, nil
+	return user, nil
 }
 
-func (s *CacheService) WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
-	cacheKey := sessionkey
-	session := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
-	if err := DatabaseService.Write(&session); err != nil {
-		return nil, fmt.Errorf("Failed to create session in database: %v", err)
+func GetUserByPlayername(playername string) (*User, error) {
+	user, err := Read[User](CacheService, playername, "playername")
+	if err != nil {
+		return nil, err
 	}
-	s.cache.Set(cacheKey, &session, cache.DefaultExpiration)
-	return &session, nil
+	return user, nil
+}
+
+func GetUIDBySessionkey(sessionkey string) (*Session, error) {
+	session, err := Read[Session](CacheService, sessionkey, "sessionkey")
+	if err != nil {
+		return nil, err
+	}
+	return session, nil
+}
+
+func (s *CacheS) WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
+	sessionval := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
+	session, err := WriteNew(CacheService, sessionkey, &sessionval)
+	if err != nil {
+		return nil, err
+	}
+	return session, nil
 }
