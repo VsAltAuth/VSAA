@@ -70,8 +70,8 @@ func InitDatabaseService(db *gorm.DB) error {
 	    Functions specific to reading-writing DB. Now separate from CaheService =D
 		How to use examples:
 		var user User // type User struct
-		err := DatabaseService.Query[T]("uid", "myuid", &user)
-		err = DatabaseService.Write[T](&user)
+		err := Query(DatabaseService, "uid", "myuid", &user)
+		err = Write(DatabaseService, &user)
 
 		IMPORTANT!!! These should NOT be used outside of abstractions in CacheService
 
