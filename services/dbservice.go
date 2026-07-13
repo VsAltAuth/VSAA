@@ -83,7 +83,7 @@ func (s *DBService) Write(data interface{}) error {
 	return nil
 }
 
-func (s *DBService) Read(entry string, data string, table interface{}) error {
+func (s *DBService) Query(entry string, data string, table interface{}) error {
 	if err := s.db.WithContext(s.ctx).Where(entry, data).First(table).Error; err != nil {
 		return fmt.Errorf("Failed to read data in databse: %v", err)
 	}

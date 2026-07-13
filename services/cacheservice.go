@@ -36,7 +36,7 @@ func (s *CacheService) GetUserByUID(uid string) (*User, error) {
 
 	// Query DB if not found in cache
 	var user User
-	if err := DatabaseService.Read("uid = ?", uid, &user); err != nil {
+	if err := DatabaseService.Query("uid = ?", uid, &user); err != nil {
 		return nil, err
 	}
 	// Cache value we got
@@ -52,7 +52,7 @@ func (s *CacheService) GetUserByPlayername(playername string) (*User, error) {
 
 	// Query DB if not found in cache
 	var user User
-	if err := DatabaseService.Read("playername = ?", playername, &user); err != nil {
+	if err := DatabaseService.Query("playername = ?", playername, &user); err != nil {
 		return nil, err
 	}
 	// Cache value we got
@@ -68,7 +68,7 @@ func (s *CacheService) GetUIDBySessionkey(sessionkey string) (*Session, error) {
 
 	// Query DB if not found in cache
 	var session Session
-	if err := DatabaseService.Read("session = ?", sessionkey, &session); err != nil {
+	if err := DatabaseService.Query("session = ?", sessionkey, &session); err != nil {
 		return nil, err
 	}
 	// Cache value we got
