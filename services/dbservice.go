@@ -77,14 +77,14 @@ func InitDatabaseService(db *gorm.DB) error {
 
 		TODO: rewrite gorm usage with go generics
 */
-func Create[T any](s *DBService, data T*) error {
+func Create[T any](s *DBService, data *T) error {
 	if err := s.db.WithContext(s.ctx).Create(data).Error; err != nil {
 		return fmt.Errorf("Failed to create data in database: %v", err)
 	}
 	return nil
 }
 
-func Query[T any](s *DBService, entryname string, cacheKey string, dest T*) error {
+func Query[T any](s *DBService, entryname string, cacheKey string, dest *T) error {
 	var entry = entryname + " = ?"
 	if err := s.db.WithContext(s.ctx).Where(entry, cacheKey).First(dest).Error; err != nil {
 		return fmt.Errorf("Failed to read data in databse: %v", err)
@@ -92,7 +92,7 @@ func Query[T any](s *DBService, entryname string, cacheKey string, dest T*) erro
 	return nil
 }
 
-func Delete[T any](s *DBService, entryname string, cacheKey string, dest T*) error {
+func Delete[T any](s *DBService, entryname string, cacheKey string, dest *T) error {
 	var entry = entryname + " = ?"
 	if err := s.db.WithContext(s.ctx).Where(entry, cacheKey).Delete(dest).Error; err != nil {
 		return fmt.Errorf("Failed to delete data in databse: %v", err)
