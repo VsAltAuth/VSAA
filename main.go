@@ -20,6 +20,7 @@ func main() {
 	router.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "hi"}) })
 	router.POST("/resolveplayername", utils.ResolveUIDByPlayername)
 	router.POST("/resolveplayeruid", utils.ResolvePlayernameByUID)
+	router.POST("/clientvalidate", utils.ClientValidate)
 
 	router.Run("localhost:8080")
 }
