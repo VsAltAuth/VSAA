@@ -68,33 +68,34 @@ func InitDatabaseService(db *gorm.DB) error {
 
 /*
 	    Functions specific to reading-writing DB. Now separate from CaheService =D
-		Ideally I should abstract than one out too.
 		How to use examples:
 		var user User // type User struct
-		err := DatabaseService.Read("uid = ?", "myuid", &user)
-		err = DatabaseService.Write(&user)
+		err := DatabaseService.Query[T]("uid", "myuid", &user)
+		err = DatabaseService.Write[T](&user)
 
-		TODO: rewrite using go generics
+		IMPORTANT!!! These should NOT be used outside of abstractions in CacheService
+
+		TODO: rewrite gorm usage with go generics
 */
-func (s *DBService) Write(data interface{}) error {
+func Create[T any](s *DBService, data T*) error {
 	if err := s.db.WithContext(s.ctx).Create(data).Error; err != nil {
-		return fmt.Errorf("Failed to write data in database: %v", err)
+		return fmt.Errorf("Failed to create data in database: %v", err)
 	}
 	return nil
 }
 
-func (s *DBService) Query(entryname string, data string, table interface{}) error {
+func Query[T any](s *DBService, entryname string, cacheKey string, dest T*) error {
 	var entry = entryname + " = ?"
-	if err := s.db.WithContext(s.ctx).Where(entry, data).First(table).Error; err != nil {
+	if err := s.db.WithContext(s.ctx).Where(entry, cacheKey).First(dest).Error; err != nil {
 		return fmt.Errorf("Failed to read data in databse: %v", err)
 	}
 	return nil
 }
 
-func (s *DBService) Delete(entryname string, data string, table interface{}) error {
+func Delete[T any](s *DBService, entryname string, cacheKey string, dest T*) error {
 	var entry = entryname + " = ?"
-	if err := s.db.WithContext(s.ctx).Where(entry, data).Delete(table).Error; err != nil {
-		return fmt.Errorf("Failed to read data in databse: %v", err)
+	if err := s.db.WithContext(s.ctx).Where(entry, cacheKey).Delete(dest).Error; err != nil {
+		return fmt.Errorf("Failed to delete data in databse: %v", err)
 	}
 	return nil
 }
