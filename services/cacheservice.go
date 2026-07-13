@@ -8,28 +8,14 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
-var CacheService *CacheS
+var CacheService *cache.Cache
 
-type CacheS struct {
-	cache *cache.Cache
+func InitCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) {
+	CacheService = cache.New(expirationDuration, cleanupInterval)
 }
 
-func NewCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) *CacheS {
-	return &CacheS{
-		cache: cache.New(expirationDuration, cleanupInterval),
-	}
-}
-
-func InitCacheService(expirationDuration time.Duration, cleanupInterval time.Duration) error {
-	CacheService := NewCacheService(expirationDuration, cleanupInterval)
-	if CacheService == nil {
-		return fmt.Errorf("Something bad happened in InitCacheService!!!")
-	}
-	return nil
-}
-
-func Read[T any](s *CacheS, cacheKey string, entryname string) (*T, error) {
-	if cached, found := s.cache.Get(cacheKey); found {
+func Read[T any](s *cache.Cache, cacheKey string, entryname string) (*T, error) {
+	if cached, found := s.Get(cacheKey); found {
 		if data, ok := cached.(*T); ok {
 			return data, nil
 		}
@@ -39,24 +25,24 @@ func Read[T any](s *CacheS, cacheKey string, entryname string) (*T, error) {
 	if err := Query(DatabaseService, entryname, cacheKey, &data); err != nil {
 		return nil, err
 	}
-	s.cache.Set(cacheKey, &data, cache.DefaultExpiration)
+	s.Set(cacheKey, &data, cache.DefaultExpiration)
 	return &data, nil
 }
 
-func WriteNew[T any](s *CacheS, cacheKey string, data *T) (*T, error) {
+func WriteNew[T any](s *cache.Cache, cacheKey string, data *T) (*T, error) {
 	if err := Create[T](DatabaseService, data); err != nil {
 		return nil, err
 	}
-	s.cache.Set(cacheKey, data, cache.DefaultExpiration)
+	s.Set(cacheKey, data, cache.DefaultExpiration)
 	return data, nil
 }
 
-func DeleteNew[T any](s *CacheS, cacheKey string, entryname string) error {
+func DeleteNew[T any](s *cache.Cache, cacheKey string, entryname string) error {
 	var data T
 	if err := Delete(DatabaseService, entryname, cacheKey, &data); err != nil {
 		return err
 	}
-	s.cache.Delete(cacheKey)
+	s.Delete(cacheKey)
 	return nil
 }
 
@@ -84,7 +70,7 @@ func GetUIDBySessionkey(sessionkey string) (*Session, error) {
 	return session, nil
 }
 
-func (s *CacheS) WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
+func WriteSession(uid string, sessionkey string, gamever string) (*Session, error) {
 	sessionval := Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
 	session, err := WriteNew(CacheService, sessionkey, &sessionval)
 	if err != nil {

@@ -59,7 +59,7 @@ func NewDatabaseService(db *gorm.DB, ctx context.Context) *DBService {
 }
 
 func InitDatabaseService(db *gorm.DB) error {
-	DatabaseService := NewDatabaseService(db, context.Background())
+	DatabaseService = NewDatabaseService(db, context.Background())
 	if DatabaseService == nil {
 		return fmt.Errorf("Something bad happened in InitDatabaseService!!!")
 	}
