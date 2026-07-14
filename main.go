@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/VsAltAuth/VSAA/routers"
 	"github.com/VsAltAuth/VSAA/services"
-	"github.com/VsAltAuth/VSAA/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,10 +18,10 @@ func main() {
 	router := gin.Default()
 	//router.TrustedPlatform = gin.PlatformCloudflare
 	router.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"message": "hi"}) })
-	router.POST("/resolveplayername", utils.ResolveUIDByPlayername)
-	router.POST("/resolveplayeruid", utils.ResolvePlayernameByUID)
-	router.POST("/clientvalidate", utils.ClientValidate)
-	router.POST("/gamelogout", utils.GameLogout)
+	router.POST("/resolveplayername", routers.ResolveUIDByPlayername)
+	router.POST("/resolveplayeruid", routers.ResolvePlayernameByUID)
+	router.POST("/clientvalidate", routers.ClientValidate)
+	router.POST("/gamelogout", routers.GameLogout)
 
 	router.Run("localhost:8080")
 }

@@ -1,21 +1,22 @@
-package utils
+package routers
 
 import (
 	"net/http"
 
+	"github.com/VsAltAuth/VSAA/utils"
 	"github.com/gin-gonic/gin"
 )
 
 func ClientValidate(c *gin.Context) {
 	sessionKey := c.PostForm("sessionkey")
 	uid := c.PostForm("uid")
-	user, err := GetUIDBySessionkey(sessionKey)
+	user, err := utils.GetUIDBySessionkey(sessionKey)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "nosession"})
 		return
 	}
 	if user.UID == uid {
-		usr, err := GetUserByUID(uid)
+		usr, err := utils.GetUserByUID(uid)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": err})
 			return
