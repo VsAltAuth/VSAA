@@ -13,12 +13,12 @@ func GameLogout(c *gin.Context) {
 	sessionkey := c.PostForm("sessionkey")
 	user, err := utils.GetUIDBySessionkey(sessionkey)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"valid": 1}) // client doesn't care what server returns. Og VS server seems to always return this value
-		return
+		c.JSON(http.StatusOK, gin.H{"valid": 1}) // client doesn't care what server returns.
+		return                                   // Og VS server seems to always return this value
 	}
 	usr, err := utils.GetUserByUID(user.UID)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"valid": 1}) // see above
+		c.JSON(http.StatusOK, gin.H{"valid": 1})
 		return
 	}
 	if usr.Email != email {
