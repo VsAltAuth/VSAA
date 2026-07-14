@@ -34,3 +34,7 @@ go.work.sum
 # Database
 database/
 .DS_Store
+
+# Default key locations
+private.key
+public_key.pem
