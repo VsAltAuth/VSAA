@@ -15,14 +15,19 @@ func ClientValidate(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "nosession"})
 		return
 	}
-	if user.UID == uid {
-		usr, err := utils.GetUserByUID(uid)
-		if err != nil {
-			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": err})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{"valid": 1, "reason": "", "entitlements": usr.Entitlements, "hasgameserver": false}) // hasgameserver likely reffers to VS's in-house hosting service. We don't provide one so always return false
-	} else {
+	if user.UID != uid {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "noaccount"})
+		return
 	}
+	usr, err := utils.GetUserByUID(uid)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": err})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"valid":         1,
+		"reason":        "",
+		"entitlements":  usr.Entitlements,
+		"hasgameserver": false, // VS in-house hosting which we do not provide
+	})
 }
