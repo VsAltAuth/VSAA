@@ -7,6 +7,7 @@ import (
 
 	"github.com/VsAltAuth/VSAA/routers"
 	"github.com/VsAltAuth/VSAA/services"
+	"github.com/VsAltAuth/VSAA/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,6 +24,9 @@ func main() {
 	router.POST("/clientvalidate", routers.ClientValidate)
 	router.POST("/gamelogout", routers.GameLogout)
 	router.POST("/resolveserverhost", routers.ResolveServerHost)
+	//router.POST("/:v/gamelogin", routers.)
+
+	router.GET("/publickeypem", func(c *gin.Context) { c.File(utils.PubkeyFile()) })
 
 	router.Run("localhost:8080")
 }

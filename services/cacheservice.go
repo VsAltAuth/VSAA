@@ -45,3 +45,8 @@ func DeleteNew[T any](s *cache.Cache, entryname string, cacheKey string) error {
 	s.Delete(cacheKey)
 	return nil
 }
+
+func WriteCache[T any](s *cache.Cache, cacheKey string, data *T) (*T, error) {
+	s.Set(cacheKey, data, cache.DefaultExpiration)
+	return data, nil
+}
