@@ -24,7 +24,8 @@ func main() {
 	router.POST("/clientvalidate", routers.ClientValidate)
 	router.POST("/gamelogout", routers.GameLogout)
 	router.POST("/resolveserverhost", routers.ResolveServerHost)
-	//router.POST("/:v/gamelogin", routers.)
+	router.POST("/:v/gamelogin", routers.GameLogin)
+	router.POST("/debug/adduser", routers.RegisterNewUser)
 
 	router.GET("/publickeypem", func(c *gin.Context) { c.File(utils.PubkeyFile()) })
 

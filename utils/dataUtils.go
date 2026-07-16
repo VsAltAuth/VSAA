@@ -44,3 +44,12 @@ func RMSession(sessionkey string) error {
 	}
 	return nil
 }
+
+func WriteUser(uid string, email string, hashedpass string, playername string, entitlements string) (*models.User, error) {
+	user := models.User{UID: uid, Email: email, HashedPass: hashedpass, Playername: playername, Entitlements: entitlements}
+	usr, err := services.WriteNew(services.CacheService, uid, &user)
+	if err != nil {
+		return nil, err
+	}
+	return usr, nil
+}
