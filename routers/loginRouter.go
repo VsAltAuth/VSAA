@@ -39,7 +39,7 @@ func GameLogout(c *gin.Context) {
 
 func GameLogin(c *gin.Context) {
 	v := c.Param("v")
-	if v == "/2/" {
+	if v == "v2" {
 		email := c.PostForm("email")
 		password := c.PostForm("password")
 		gamever := c.PostForm("gameloginversion")
@@ -60,6 +60,7 @@ func GameLogin(c *gin.Context) {
 		sessionkey := uuid.NewString()
 		sessionkeysig, err := utils.Sign(sessionkey)
 		if err != nil {
+			fmt.Println(err)
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "signfail"})
 			return
 		}
