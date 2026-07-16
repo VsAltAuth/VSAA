@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/http"
 
@@ -59,18 +60,20 @@ func GameLogin(c *gin.Context) {
 		}
 		sessionkey := uuid.NewString()
 		sessionkeysig, err := utils.Sign(sessionkey)
+		encodedsessionkeysig := base64.StdEncoding.EncodeToString([]byte(sessionkeysig))
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "signfail"})
 			return
 		}
+
 		session := models.Session{UID: user.UID, Sessionkey: sessionkey, Gamever: gamever}
 		services.WriteNew(services.CacheService, sessionkey, &session)
 		services.WriteCache(services.CacheService, user.UID, user)
 		c.JSON(http.StatusOK, gin.H{
 			"valid":               1,
 			"sessionkey":          sessionkey,
-			"sessionkeysignature": sessionkeysig,
+			"sessionkeysignature": encodedsessionkeysig,
 			"uid":                 user.UID,
 			"playername":          user.Playername,
 			"entitlements":        user.Entitlements,
