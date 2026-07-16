@@ -77,6 +77,7 @@ func GameLogin(c *gin.Context) {
 			"prelogintoken":       "",    //TODO: figure out what this is
 			"hasgameserver":       false, // Relate to VS's in-house hosting which we do not provide
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "Unsupported API version. Currently only v2 is supported"})
 }

@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto"
 	"crypto/rsa"
+	"crypto/sha256"
 	"crypto/x509"
 	"encoding/pem"
 	"os"
@@ -45,7 +46,8 @@ func PrivateKey() *rsa.PrivateKey {
 
 func Sign(unsignedval string) (string, error) {
 	val := []byte(unsignedval)
-	signed, err := rsa.SignPKCS1v15(nil, PrivateKey(), crypto.SHA256, val[:])
+	hashed := sha256.Sum256(val)
+	signed, err := rsa.SignPKCS1v15(nil, PrivateKey(), crypto.SHA256, hashed[:])
 	if err != nil {
 		return "invalid", err
 	}
