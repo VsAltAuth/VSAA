@@ -56,7 +56,7 @@ func InitDatabaseService(db *gorm.DB) error {
 		How to use examples:
 		var user User // type User struct
 		err := Query(DatabaseService, "uid", "myuid", &user)
-		err = Write(DatabaseService, &user)
+		err = Create(DatabaseService, &user)
 
 		IMPORTANT!!! These should NOT be used outside of abstractions in CacheService
 
