@@ -7,7 +7,6 @@ import (
 	"github.com/VsAltAuth/VSAA/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 // WIP
@@ -17,12 +16,12 @@ func RegisterNewUser(c *gin.Context) {
 	password := c.PostForm("password")
 	playername := c.PostForm("playername")
 	uid := uuid.NewString()
-	hashedpass, err := bcrypt.GenerateFromPassword([]byte(password), 1)
+	hashedpass, err := utils.BHashPass(password)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "failed to hash pass"})
 		return
 	}
-	newuser, err := utils.WriteUser(uid, email, string(hashedpass), playername, "VIV")
+	newuser, err := utils.WriteUser(uid, email, hashedpass, playername, "VIV")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": fmt.Errorf("%s", err)})
 		return

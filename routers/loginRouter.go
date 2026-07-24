@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/VsAltAuth/VSAA/models"
 	"github.com/VsAltAuth/VSAA/services"
@@ -49,7 +48,7 @@ func GameLogin(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "dberror"})
 			return
 		}
-		err := bcrypt.CompareHashAndPassword([]byte(user.HashedPass), []byte(password))
+		err := utils.BCompare(user.HashedPass, password)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "invalidemailorpassword"})
 			return
