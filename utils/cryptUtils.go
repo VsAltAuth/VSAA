@@ -10,6 +10,8 @@ import (
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func privkeyFile() string {
@@ -58,4 +60,17 @@ func Sign(unsignedval string) (string, error) {
 	}
 	signedString := string(signed)
 	return signedString, nil
+}
+
+func BHashPass(pass string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	if err != nil {
+		return "ERROR", err
+	}
+	return string(hashed), err
+}
+
+func BCompare(hashed string, pass string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(pass))
+	return err
 }
