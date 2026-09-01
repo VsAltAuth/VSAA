@@ -23,7 +23,7 @@ func InitServerInstance() {
 	// Debug stuff (to be replaced with a CLI)
 	router.POST("/debug/adduser", routers.RegisterNewUser)
 
-	router.GET("/publickeypem", func(c *gin.Context) { c.File(utils.PubkeyFile()) })
+	router.GET("/publickeypem", func(c *gin.Context) { c.String(http.StatusOK, utils.GetPublicKey()) })
 
 	router.Run("localhost:8080")
 
