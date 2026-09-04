@@ -66,9 +66,8 @@ func GameLogin(c *gin.Context) {
 			return
 		}
 
-		session := models.Session{UID: user.UID, Sessionkey: sessionkey, Gamever: gamever}
-		services.WriteNew(services.CacheService, sessionkey, &session)
-		services.WriteCache(services.CacheService, user.UID, user)
+		utils.WriteSession(user.UID, sessionkey, gamever)
+
 		c.JSON(http.StatusOK, gin.H{
 			"valid":               1,
 			"sessionkey":          sessionkey,
