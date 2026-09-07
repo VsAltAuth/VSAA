@@ -43,8 +43,7 @@ func GetPublicKey() string {
 			Type:  "PUBLIC KEY",
 			Bytes: pubKeyBytes,
 		}
-		pemBytes := pem.EncodeToMemory(pemBlock)
-		publicKey = string(pemBytes)
+		publicKey = string(pem.EncodeToMemory(pemBlock))
 	})
 	return publicKey
 }
