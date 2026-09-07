@@ -16,8 +16,6 @@ import (
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 var publicKey string
@@ -94,19 +92,6 @@ func Sign(unsignedval string) (string, error) {
 	return signedString, nil
 }
 
-func BHashPass(pass string) (string, error) {
-	hashed, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
-	if err != nil {
-		return "ERROR", err
-	}
-	return string(hashed), err
-}
-
-func BCompare(hashed string, pass string) error {
-	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(pass))
-	return err
-}
-
 func generateSalt() (string, error) {
 	a := int(bits.Reverse64(uint64(time.Now().Unix())))
 	b := []byte(strconv.Itoa(a))
@@ -116,8 +101,26 @@ func generateSalt() (string, error) {
 	return base64.RawURLEncoding.EncodeToString(b), nil
 }
 
+// actually does the hashing and salting
 func hashPassword(pass string, salt string) string {
 	saltedPass := pass + salt
 	hash := sha256.Sum256([]byte(saltedPass))
 	return hex.EncodeToString(hash[:])
+}
+
+// public function that receives string password, generates a salt, then returns hashed pass and the salt
+func HashPass(pass string) (string, string, error) {
+	salt, err := generateSalt()
+	if err != nil {
+		return "", "", err
+	}
+	return hashPassword(pass, salt), salt, nil
+}
+
+func ComparePasses(a string, pass string, salt string) error {
+	b := hashPassword(pass, salt)
+	if a == b {
+		return nil
+	}
+	return fmt.Errorf("comparePasses(): hashes do not match!")
 }

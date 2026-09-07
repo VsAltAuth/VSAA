@@ -46,7 +46,7 @@ func GameLogin(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "dberror"})
 			return
 		}
-		err = utils.BCompare(user.HashedPass, password)
+		err = utils.ComparePasses(user.HashedPass, password, user.Salt)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "invalidemailorpassword"})
 			return

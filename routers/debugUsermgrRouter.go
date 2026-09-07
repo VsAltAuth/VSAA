@@ -16,12 +16,12 @@ func RegisterNewUser(c *gin.Context) {
 	password := c.PostForm("password")
 	playername := c.PostForm("playername")
 	uid := uuid.NewString()
-	hashedpass, err := utils.BHashPass(password)
+	hashedpass, salt, err := utils.HashPass(password)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "failed to hash pass"})
 		return
 	}
-	newuser, err := utils.WriteUser(uid, email, hashedpass, playername, "VIV")
+	newuser, err := utils.WriteUser(uid, email, hashedpass, salt, playername, "VIV")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": fmt.Errorf("%s", err)})
 		return
