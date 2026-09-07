@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 
-	"github.com/VsAltAuth/VSAA/models"
-	"github.com/VsAltAuth/VSAA/services"
 	"github.com/VsAltAuth/VSAA/utils"
 )
 
@@ -43,12 +41,12 @@ func GameLogin(c *gin.Context) {
 		email := c.PostForm("email")
 		password := c.PostForm("password")
 		gamever := c.PostForm("gameloginversion")
-		var user *models.User
-		if err := services.Query(services.DatabaseService, "email", email, &user); err != nil {
+		user, err := utils.QueryByEmail(email)
+		if err != nil {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "dberror"})
 			return
 		}
-		err := utils.BCompare(user.HashedPass, password)
+		err = utils.BCompare(user.HashedPass, password)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{"valid": 0, "reason": "invalidemailorpassword"})
 			return

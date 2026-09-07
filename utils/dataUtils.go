@@ -29,6 +29,15 @@ func GetUIDBySessionkey(sessionkey string) (*models.Session, error) {
 	return session, nil
 }
 
+func QueryByEmail(email string) (*models.User, error) {
+	var data models.User
+	err := services.Query(services.DatabaseService, "email", email, &data)
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}
+
 func WriteSession(uid string, sessionkey string, gamever string) (*models.Session, error) {
 	sessionval := models.Session{UID: uid, Sessionkey: sessionkey, Gamever: gamever}
 	session, err := services.WriteNew(services.CacheService, sessionkey, &sessionval)
