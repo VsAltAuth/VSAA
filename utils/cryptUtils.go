@@ -77,6 +77,9 @@ func GetPrivateKey() (*rsa.PrivateKey, error) {
 }
 
 func Sign(unsignedval string) (string, error) {
+	if privateKey == nil {
+		GetPrivateKey()
+	}
 	val := []byte(unsignedval)
 	hashed := sha256.Sum256(val)
 	signed, err := rsa.SignPKCS1v15(nil, privateKey, crypto.SHA256, hashed[:])
