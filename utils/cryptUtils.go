@@ -5,10 +5,15 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
+	"encoding/hex"
 	"encoding/pem"
 	"fmt"
+	"math/bits"
 	"os"
+	"strconv"
 	"sync"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 
@@ -100,4 +105,19 @@ func BHashPass(pass string) (string, error) {
 func BCompare(hashed string, pass string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(pass))
 	return err
+}
+
+func generateSalt() (string, error) {
+	a := int(bits.Reverse64(uint64(time.Now().Unix())))
+	b := []byte(strconv.Itoa(a))
+	if b == nil {
+		return "", fmt.Errorf("generateSalt(): b is nil but cannot be nil!")
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+func hashPassword(pass string, salt string) string {
+	saltedPass := pass + salt
+	hash := sha256.Sum256([]byte(saltedPass))
+	return hex.EncodeToString(hash[:])
 }
