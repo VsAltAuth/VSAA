@@ -15,6 +15,12 @@ import (
 func DATABASE() string {
 	database := os.Getenv("SQLITE_PATH")
 	if database == "" {
+		if _, err := os.Stat("database"); os.IsNotExist(err) {
+			if err := os.Mkdir("database", os.ModePerm); err != nil {
+				panic("Failed to create folder \"database\"!")
+			}
+		}
+		// TODO: maybe log this
 		return "database/sqlite.db"
 	}
 	return database
@@ -28,6 +34,7 @@ type DBService struct {
 }
 
 func DBInit() *gorm.DB {
+	//TODO: add support for other db types
 	db, err := gorm.Open(sqlite.Open(DATABASE()), &gorm.Config{})
 	if err != nil {
 		panic("Failed to connect database")
