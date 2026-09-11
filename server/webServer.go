@@ -20,9 +20,6 @@ func InitServerInstance() {
 	router.POST("/resolveserverhost", routers.ResolveServerHost)
 	router.POST("/:v/gamelogin", routers.GameLogin)
 
-	// Debug stuff (to be replaced with a CLI)
-	router.POST("/debug/adduser", routers.RegisterNewUser)
-
 	router.GET("/publickeypem", func(c *gin.Context) { c.String(http.StatusOK, utils.GetPublicKey()) })
 
 	router.Run("localhost:8080")
