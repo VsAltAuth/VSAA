@@ -9,11 +9,14 @@ import (
 
 func RegisterNewUser(name string, pass string, email string) error {
 	if name == "" {
-		return fmt.Errorf("Username must be set!")
+		fmt.Println("Username must be set!")
+		return nil
 	} else if pass == "" {
-		return fmt.Errorf("Password must be set!")
+		fmt.Println("Password must be set!")
+		return nil
 	} else if email == "" {
-		return fmt.Errorf("Email must be set!")
+		fmt.Println("Email must be set!")
+		return nil
 	}
 	uid := uuid.NewString()
 	hashedpass, salt, err := utils.HashPass(pass)
@@ -24,6 +27,6 @@ func RegisterNewUser(name string, pass string, email string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Created new user with uid %s, playername %s", newuser.UID, newuser.Playername)
+	fmt.Printf("Created new user with uid %s, playername %s\n", newuser.UID, newuser.Playername)
 	return nil
 }
