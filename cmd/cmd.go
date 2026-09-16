@@ -13,6 +13,8 @@ func StartApplication() error {
 	namePtr := mkUsrCmd.String("name", "", "username of the user being created")
 	passPtr := mkUsrCmd.String("pass", "", "password of the user being created")
 	mailPtr := mkUsrCmd.String("email", "", "email of the user being created")
+	rmUsrCmd := flag.NewFlagSet("mrmusr", flag.ExitOnError)
+	uidPtr := rmUsrCmd.String("uid", "", "uid of user to delete")
 
 	if len(os.Args) < 2 {
 		fmt.Println("No arguments received.")
@@ -24,7 +26,13 @@ func StartApplication() error {
 		server.InitServerInstance()
 	case "mkusr":
 		mkUsrCmd.Parse(os.Args[2:])
-		err := RegisterNewUser(*namePtr, *passPtr, *mailPtr)
+		err := registerNewUser(*namePtr, *passPtr, *mailPtr)
+		if err != nil {
+			return err
+		}
+	case "rmusr":
+		rmUsrCmd.Parse(os.Args[2:])
+		err := removeUser(*uidPtr)
 		if err != nil {
 			return err
 		}

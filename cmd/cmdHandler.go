@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func RegisterNewUser(name string, pass string, email string) error {
+func registerNewUser(name string, pass string, email string) error {
 	if name == "" {
 		fmt.Println("Username must be set!")
 		return nil
@@ -28,5 +28,16 @@ func RegisterNewUser(name string, pass string, email string) error {
 		return err
 	}
 	fmt.Printf("Created new user with uid %s, playername %s\n", newuser.UID, newuser.Playername)
+	return nil
+}
+
+func removeUser(uid string) error {
+	if uid == "" {
+		fmt.Println("A valid UID must be passed!")
+		return nil
+	}
+	if err := utils.RMUser(uid); err != nil {
+		return err
+	}
 	return nil
 }

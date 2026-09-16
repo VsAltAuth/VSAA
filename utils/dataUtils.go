@@ -62,3 +62,11 @@ func WriteUser(uid string, email string, hashedpass string, salt string, playern
 	}
 	return usr, nil
 }
+
+// TODO: IMPORTANT! perma cache removal by ALL tags
+func RMUser(uid string) error {
+	if err := services.DeleteNew[models.Session](services.CacheService, "uid", uid); err != nil {
+		return err
+	}
+	return nil
+}
